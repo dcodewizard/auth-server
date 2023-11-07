@@ -1,10 +1,12 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignInDto } from './dto/signin.dto';
 import { AuthService } from '../auth/auth.service';
+import { JwtAuthMiddleware } from 'src/middleware/jwt-auth.middleware';
 
 @Controller('api/users')
+@UseGuards(JwtAuthMiddleware)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -59,5 +61,4 @@ export class UserController {
 
     return { user, token };
   }
-
 }
