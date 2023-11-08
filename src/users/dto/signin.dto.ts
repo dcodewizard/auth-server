@@ -6,4 +6,5 @@ export class SignInDto {
 
   @IsString()
   password: string;
+  
 }

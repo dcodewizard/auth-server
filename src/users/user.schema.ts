@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { User } from './user.model';
 
 export const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -15,7 +16,7 @@ export const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', async function (next) {
-  const user = this as any;
+  const user = this as User;
   if (!user.isModified('password')) return next();
 
   try {
