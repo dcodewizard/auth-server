@@ -9,7 +9,9 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (password) => password.length >= 8,
+      validator: function (password: string): boolean {
+        return password.length >= 8;
+      },
       message: 'Password must be at least 8 characters long',
     },
   },
@@ -29,6 +31,8 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-UserSchema.methods.comparePassword = async function (candidatePassword) {
+UserSchema.methods.comparePassword = async function (
+  candidatePassword,
+): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };

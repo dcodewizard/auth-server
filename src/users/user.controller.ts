@@ -1,17 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignInDto } from './dto/signin.dto';
 import { AuthService } from '../auth/auth.service';
 import { JwtAuthMiddleware } from 'src/middleware/jwt-auth.middleware';
 import { User } from './user.model';
+import { CustomError } from 'src/Error/customHttpErrors';
 
 @Controller('api/users')
 @UseGuards(JwtAuthMiddleware)
@@ -28,8 +22,8 @@ export class UserController {
   }> {
     if (!this.isPasswordValid(createUserDto.password)) {
       console.error('Password validation failed');
-      throw new HttpException(
-        'Password validation failed',
+      throw new CustomError(
+        'Password must be at least 8 characters long and include at least 1 letter, 1 number, and 1 special character.',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -41,8 +35,8 @@ export class UserController {
 
       if (!token) {
         console.error('Error generating JWT token');
-        throw new HttpException(
-          'User registration failed',
+        throw new CustomError(
+          'Unable to authenticate',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
@@ -52,10 +46,7 @@ export class UserController {
       return { user, token };
     } catch (error) {
       console.error('Error during user registration:', error);
-      throw new HttpException(
-        'User registration failed',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new CustomError('User already exists', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -75,8 +66,11 @@ export class UserController {
     const user = await this.userService.signIn(signInDto);
 
     if (!user) {
-      console.error('User not found for email:', signInDto.email);
-      throw new HttpException('Sign-in failed', HttpStatus.UNAUTHORIZED);
+      console.error('Incorrect email or password:', signInDto.email);
+      throw new CustomError(
+        'incorrect email or password',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const token = await this.authService.generateToken({ sub: user._id });

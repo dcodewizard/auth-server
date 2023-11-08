@@ -14,35 +14,37 @@ export class UserService {
       const user = new this.userModel(createUserDto);
       return await user.save();
     } catch (error) {
-      if (error.code === 11000 && error.keyPattern && 'email' in error.keyPattern) {
-        throw new Error('Email is already in use.');
-      }
-      throw error;
+      throw new Error(error);
     }
   }
 
   async signIn(signInDto: SignInDto): Promise<User | null> {
     console.log('Received sign-in request with data:', signInDto);
-    
-    const user = await this.userModel.findOne({ email: signInDto.email }).exec();
-  
+
+    const user = await this.userModel
+      .findOne({ email: signInDto.email })
+      .exec();
+
     if (!user) {
       console.error('User not found for email:', signInDto.email);
       return null;
     }
-  
+
     console.log('User found in the database:', user);
-    
+
     const isPasswordValid = await user.comparePassword(signInDto.password);
-  
+
     if (!isPasswordValid) {
       console.error('Password is incorrect for email:', signInDto.email);
       return null;
     }
-  
+
     console.log('Sign-in successful for email:', signInDto.email);
-    
+
     return user;
   }
-  
+
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
 }

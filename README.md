@@ -2,6 +2,8 @@
 
 A secure authentication API built with NestJS and integrated with MongoDB Atlas, providing user registration and sign-in functionalities.
 
+-[Sample](https://www.loom.com/share/34cf99b928e54126a1a18a290d207e75?sid=34785d2a-13ac-486c-8309-598a41b025d4)
+
 ## Table of Contents
 
 - [Introduction](#introduction)

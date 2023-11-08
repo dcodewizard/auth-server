@@ -5,11 +5,7 @@ import { config } from 'dotenv';
 config();
 
 @Module({
-  imports: [
-    MongooseModule.forRoot(process.env.MONGODB_URI, {
-    }),
-    UserModule,
-  ],
+  imports: [MongooseModule.forRoot(process.env.MONGODB_URI, {}), UserModule],
   controllers: [],
   providers: [],
 })
